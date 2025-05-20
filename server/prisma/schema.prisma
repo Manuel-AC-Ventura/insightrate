@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String       @id @default(uuid()) @db.Char(36)
+  email       String       @unique
+  password    String       @map("password")
+  name        String
+  createdAt   DateTime     @default(now()) @map("created_at")
+  boards      Board[]      @relation("UserBoards")
+  suggestions Suggestion[] @relation("SuggestionAuthor")
+  votes       Vote[]       @relation("UserVotes")
+}
+
+model Board {
+  id          String       @id @default(uuid()) @db.Char(36)
+  name        String
+  slug        String       @unique
+  description String
+  private     Boolean
+  ownerId     String       @map("owner_id") @db.Char(36)
+  createdAt   DateTime     @default(now()) @map("created_at")
+  owner       User         @relation("UserBoards", fields: [ownerId], references: [id])
+  suggestions Suggestion[]
+
+  @@index([ownerId], map: "Board_owner_id_fkey")
+}
+
+model Suggestion {
+  id          String   @id @default(uuid()) @db.Char(36)
+  boardId     String   @map("board_id") @db.Char(36)
+  authorId    String   @map("author_id") @db.Char(36)
+  title       String
+  description String
+  status      Status
+  votesCount  Int      @default(0) @map("votes_count")
+  createdAt   DateTime @default(now()) @map("created_at")
+  author      User     @relation("SuggestionAuthor", fields: [authorId], references: [id])
+  board       Board    @relation(fields: [boardId], references: [id])
+  votes       Vote[]
+
+  @@index([authorId], map: "Suggestion_author_id_fkey")
+  @@index([boardId], map: "Suggestion_board_id_fkey")
+}
+
+model Vote {
+  id           String     @id @default(uuid()) @db.Char(36)
+  suggestionId String     @map("suggestion_id") @db.Char(36)
+  userId       String     @map("user_id") @db.Char(36)
+  createdAt    DateTime   @default(now()) @map("created_at")
+  suggestion   Suggestion @relation(fields: [suggestionId], references: [id])
+  user         User       @relation("UserVotes", fields: [userId], references: [id])
+
+  @@unique([suggestionId, userId])
+  @@index([userId], map: "Vote_user_id_fkey")
+}
+
+enum Status {
+  novo
+  planejado
+  em_andamento
+  concluido
+}

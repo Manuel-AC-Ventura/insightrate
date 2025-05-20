@@ -1,0 +1,101 @@
+### Auth - Register
+POST http://localhost:5000/auth/register
+Content-Type: application/json
+
+{
+  "name": "namee",
+  "email": "example@example.com",
+  "password": "password"
+}
+
+###
+
+### Auth - Login
+POST http://localhost:5000/auth/login
+Content-Type: application/json
+
+{
+  "email": "example@example.com",
+  "password": "password"
+}
+
+###
+
+### Board - Create
+POST http://localhost:5000/board/create
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE5MjJmMDhiLWJlN2MtNDA5Ni1hMmU2LWJlYjlkNjMxNWZmNCIsImVtYWlsIjoiZXhhbXBsZUBleGFtcGxlLmNvbSIsImlhdCI6MTc0NzU5MjEwNCwiZXhwIjoxNzQ3NTk1NzA0fQ.lFPWGRzpQ-GQGoXFbqITdcADCu_M2M32f4yt9D1rnyY
+Content-Type: application/json
+
+{
+  "name": "Example Board",
+  "description": "This is an example board for testing.",
+  "private": false,
+  "ownerId": "a922f08b-be7c-4096-a2e6-beb9d6315ff4"
+}
+
+###
+
+### Board - Get by Slug
+GET http://localhost:5000/board/example-board
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE5MjJmMDhiLWJlN2MtNDA5Ni1hMmU2LWJlYjlkNjMxNWZmNCIsImVtYWlsIjoiZXhhbXBsZUBleGFtcGxlLmNvbSIsImlhdCI6MTc0NzU5MjEwNCwiZXhwIjoxNzQ3NTk1NzA0fQ.lFPWGRzpQ-GQGoXFbqITdcADCu_M2M32f4yt9D1rnyY
+
+###
+
+### Board - Delete
+DELETE http://localhost:5000/board/delete/example-board
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE5MjJmMDhiLWJlN2MtNDA5Ni1hMmU2LWJlYjlkNjMxNWZmNCIsImVtYWlsIjoiZXhhbXBsZUBleGFtcGxlLmNvbSIsImlhdCI6MTc0NzU5MjEwNCwiZXhwIjoxNzQ3NTk1NzA0fQ.lFPWGRzpQ-GQGoXFbqITdcADCu_M2M32f4yt9D1rnyY
+
+###
+
+### Suggestion - Create
+POST http://localhost:5000/suggestion/create
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE5MjJmMDhiLWJlN2MtNDA5Ni1hMmU2LWJlYjlkNjMxNWZmNCIsImVtYWlsIjoiZXhhbXBsZUBleGFtcGxlLmNvbSIsImlhdCI6MTc0NzU5MjEwNCwiZXhwIjoxNzQ3NTk1NzA0fQ.lFPWGRzpQ-GQGoXFbqITdcADCu_M2M32f4yt9D1rnyY
+Content-Type: application/json
+
+{
+  "boardId": "a1af8d1c-26b7-4e95-acef-f13f9644d320",
+  "title": "New Suggestion",
+  "description": "This is a suggestion",
+  "status": "novo"
+}
+
+### Suggestion - Get by ID
+GET http://localhost:5000/suggestion
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE5MjJmMDhiLWJlN2MtNDA5Ni1hMmU2LWJlYjlkNjMxNWZmNCIsImVtYWlsIjoiZXhhbXBsZUBleGFtcGxlLmNvbSIsImlhdCI6MTc0NzU5MjEwNCwiZXhwIjoxNzQ3NTk1NzA0fQ.lFPWGRzpQ-GQGoXFbqITdcADCu_M2M32f4yt9D1rnyY
+Content-Type: application/json
+
+{
+  "id": "a1af8d1c-26b7-4e95-acef-f13f9644d320"
+}
+
+###
+### Suggestion - Update
+PUT http://localhost:5000/suggestion/update
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE5MjJmMDhiLWJlN2MtNDA5Ni1hMmU2LWJlYjlkNjMxNWZmNCIsImVtYWlsIjoiZXhhbXBsZUBleGFtcGxlLmNvbSIsImlhdCI6MTc0NzU5MjEwNCwiZXhwIjoxNzQ3NTk1NzA0fQ.lFPWGRzpQ-GQGoXFbqITdcADCu_M2M32f4yt9D1rnyY
+Content-Type: application/json
+
+{
+  "id": "a1af8d1c-26b7-4e95-acef-f13f9644d320",
+  "title": "Updated Suggestion",
+  "description": "This is an updated suggestion",
+  "status": "em progresso"
+}
+
+### Suggestion - Delete
+DELETE http://localhost:5000/suggestion/delete
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE5MjJmMDhiLWJlN2MtNDA5Ni1hMmU2LWJlYjlkNjMxNWZmNCIsImVtYWlsIjoiZXhhbXBsZUBleGFtcGxlLmNvbSIsImlhdCI6MTc0NzU5MjEwNCwiZXhwIjoxNzQ3NTk1NzA0fQ.lFPWGRzpQ-GQGoXFbqITdcADCu_M2M32f4yt9D1rnyY
+Content-Type: application/json
+
+{
+  "id": "a1af8d1c-26b7-4e95-acef-f13f9644d320"
+}
+
+### Vote - Create
+POST http://localhost:5000/vote/create
+Authorization: Berear eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE5MjJmMDhiLWJlN2MtNDA5Ni1hMmU2LWJlYjlkNjMxNWZmNCIsImVtYWlsIjoiZXhhbXBsZUBleGFtcGxlLmNvbSIsImlhdCI6MTc0NzU5MjEwNCwiZXhwIjoxNzQ3NTk1NzA0fQ.lFPWGRzpQ-GQGoXFbqITdcADCu_M2M32f4yt9D1rnyY
+Content-Type: application/json
+
+{
+  "suggestionId": "6b3d71a6-d0d0-4c94-a21a-1995023897c4",
+  "userId": "a922f08b-be7c-4096-a2e6-beb9d6315ff4"
+}
