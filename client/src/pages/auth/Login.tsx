@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { login } from "../../api/auth";
+//import { login } from "../../api/auth";
+import { useAuth } from "../../hooks/useAuth";
 import { Input } from "../../components/Input";
 import { Label } from "../../components/Label";
 import { Header } from "../../components/Header";
 import { Button } from "../../components/Button";
 import { Link, useNavigate } from "react-router-dom";
-import { userSchema } from "../../validator/user.validator";
+import { userSchema } from "../../schemas/user.validator";
 
 export const Login = () => {
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -18,9 +20,11 @@ export const Login = () => {
     setError("");
 
     try {
-      const user = await login({ email, password });
+      const schema = userSchema.parseAsync({ email, password });
+      const user = await login(email, password);
 
-      console.log(user);
+     // const user = await login({ email, password });
+
     } catch (error) {
       
     }

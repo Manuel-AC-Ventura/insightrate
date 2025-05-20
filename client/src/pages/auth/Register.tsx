@@ -4,7 +4,7 @@ import { Label } from "../../components/Label";
 import { Header } from "../../components/Header";
 import { Button } from "../../components/Button";
 import { Link, useNavigate } from "react-router-dom";
-import { userSchema } from "../../validator/user.validator";
+import { userSchema } from "../../schemas/user.validator";
 
 export const Register = () => {
   const [name, setName] = useState("");

@@ -1,7 +1,6 @@
 import type { User } from "../types/user.types";
 import { login as loginRequest } from "../api/auth";
-import { useState, useEffect, createContext, useContext } from "react";
-
+import { useState, useEffect, createContext } from "react";
 
 interface AuthResponse {
   user: User;
@@ -21,48 +20,51 @@ export const AuthContext = createContext<AuthContextData | undefined>(undefined)
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
 
-  // Carrega user/token do localStorage ao montar
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     const storedToken = localStorage.getItem("token");
+    const storedRefreshToken = localStorage.getItem("refreshToken");
 
-    if (storedUser && storedToken) {
+    if (storedUser && storedToken && storedRefreshToken) {
       setUser(JSON.parse(storedUser));
       setToken(storedToken);
+      setRefreshToken(storedRefreshToken);
     }
   }, []);
 
   const login = async (email: string, password: string) => {
-    const response = await loginRequest({ email, password });
-    const data: AuthResponse = response.data;
+    const res = await loginRequest({ email, password });
 
-    setUser(data.user);
-    setToken(data.token);
+    if (res.status !== 200) {
+      throw new Error("Login failed");
+    }
 
-    localStorage.setItem("user", JSON.stringify(data.user));
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("refreshToken", data.refreshToken);
+    const { user, token, refreshToken }: AuthResponse = res.data;
+
+    setUser(user);
+    setToken(token);
+    setRefreshToken(refreshToken);
+
+    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("token", token);
+    localStorage.setItem("refreshToken", refreshToken);
   };
 
   const logout = () => {
+    // TODO: implementar logout real (API + limpeza de tokens)
     setUser(null);
     setToken(null);
+    setRefreshToken(null);
     localStorage.clear();
-    // opcional: redirecionar para login
   };
 
+  const isAuthenticated = !!user;
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, login, logout, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = (): AuthContextData => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth deve ser usado dentro de AuthProvider");
-  }
-  return context;
 };

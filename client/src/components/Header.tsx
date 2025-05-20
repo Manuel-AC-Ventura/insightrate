@@ -1,10 +1,14 @@
-import { Button } from "./Button"
-import { MessageSquare } from "lucide-react"
-import { Link, useLocation } from "react-router-dom"
+import { Button } from "./Button";
+import { useAuth } from "../hooks/useAuth";
+import { MessageSquare } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 
 export function Header() {
-  const location = useLocation()
-  const hideAuthButtons = ["/login", "/register"].includes(location.pathname)
+  const { isAuthenticated } = useAuth();
+  const location = useLocation();
+
+  const isAuthPage = ["/login", "/register"].includes(location.pathname);
+  const showAuthButtons = !isAuthenticated && !isAuthPage;
 
   return (
     <header className="sticky top-0 z-50 w-full flex items-center justify-center border-b border-zinc-300/50 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -15,15 +19,16 @@ export function Header() {
             <span>FeedbackHub</span>
           </div>
         </Link>
-        {!hideAuthButtons && (
+
+        {showAuthButtons && (
           <div className="flex items-center gap-4">
             <Link to="/login">
-              <Button className="text-black border border-zinc-300/50 bg-transparent hover:bg-zinc-300/50" >
+              <Button className="text-black border border-zinc-300/50 bg-transparent hover:bg-zinc-300/50">
                 Entrar
               </Button>
             </Link>
             <Link to="/register">
-              <Button className="text-white bg-violet-500 hover:bg-violet-600" >
+              <Button className="text-white bg-violet-500 hover:bg-violet-600">
                 Cadastrar
               </Button>
             </Link>
@@ -31,5 +36,5 @@ export function Header() {
         )}
       </div>
     </header>
-  )
+  );
 }
