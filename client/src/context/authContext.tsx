@@ -1,6 +1,6 @@
 import type { User } from "../types/user.types";
-import { login as loginRequest } from "../api/auth";
 import { useState, useEffect, createContext } from "react";
+import { login as loginRequest, register as registerRequest } from "../api/auth";
 
 interface AuthResponse {
   user: User;
@@ -11,6 +11,7 @@ interface AuthResponse {
 interface AuthContextData {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
+  register: (userData: { name: string; email: string; password: string }) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -52,8 +53,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.setItem("refreshToken", refreshToken);
   };
 
+  const register = async (userData: { name: string; email: string; password: string }) => {
+    const res = await registerRequest(userData);
+
+    if (res.status !== 201 && res.status !== 200) {
+      throw new Error("Falha ao registrar");
+    }
+
+    const { user, token, refreshToken }: AuthResponse = res.data;
+
+    setUser(user);
+    setToken(token);
+    setRefreshToken(refreshToken);
+
+    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("token", token);
+    localStorage.setItem("refreshToken", refreshToken);
+  };
+
   const logout = () => {
-    // TODO: implementar logout real (API + limpeza de tokens)
     setUser(null);
     setToken(null);
     setRefreshToken(null);
@@ -63,7 +81,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = !!user;
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated }}>
+    <AuthContext.Provider value={{ user, login, register, logout, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,14 +1,21 @@
 import { Button } from "./Button";
 import { useAuth } from "../hooks/useAuth";
 import { MessageSquare } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 export function Header() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isAuthPage = ["/login", "/register"].includes(location.pathname);
-  const showAuthButtons = !isAuthenticated && !isAuthPage;
+  const showGuestButtons = !isAuthenticated && !isAuthPage;
+  const showUserButtons = isAuthenticated && !isAuthPage;
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full flex items-center justify-center border-b border-zinc-300/50 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -20,7 +27,7 @@ export function Header() {
           </div>
         </Link>
 
-        {showAuthButtons && (
+        {showGuestButtons && (
           <div className="flex items-center gap-4">
             <Link to="/login">
               <Button className="text-black border border-zinc-300/50 bg-transparent hover:bg-zinc-300/50">
@@ -32,6 +39,30 @@ export function Header() {
                 Cadastrar
               </Button>
             </Link>
+          </div>
+        )}
+
+        {showUserButtons && (
+          <div className="flex items-center gap-4">
+            {/* Exemplo: Mostrar nome ou e-mail */}
+            {user?.name && (
+              <span className="text-sm text-zinc-700">
+                Olá, <strong>{user.name}</strong>
+              </span>
+            )}
+
+            <Link to="/profile">
+              <Button className="text-black border border-zinc-300/50 bg-transparent hover:bg-zinc-300/50">
+                Perfil
+              </Button>
+            </Link>
+
+            <Button
+              onClick={handleLogout}
+              className="text-white bg-violet-500 hover:bg-violet-600"
+            >
+              Logout
+            </Button>
           </div>
         )}
       </div>

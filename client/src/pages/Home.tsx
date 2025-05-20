@@ -1,11 +1,14 @@
 import { Link } from "react-router-dom"
-import { ArrowRight, MessageSquare, ThumbsUp, Users } from "lucide-react"
+import { useAuth } from "../hooks/useAuth"
 import { Button } from "../components/Button"
 import { Header } from "../components/Header"
 import { Footer } from "../components/Footer"
 import { FeatureCard } from "../components/FeatureCard"
+import { ArrowRight, MessageSquare, ThumbsUp, Users } from "lucide-react"
 
 export const Home = () => {
+  const { isAuthenticated } = useAuth();
+
   return (
     <div className="flex h-dvh w-full flex-col bg-slate-200">
       <Header />
@@ -24,15 +27,26 @@ export const Home = () => {
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Link to="/register">
-                    <Button className="flex items-center text-white bg-violet-500 hover:bg-violet-600" >
-                      Começar agora
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </Link>
-                  <Link to="/login">
-                    <Button className="text-black border border-zinc-300/50 bg-transparent hover:bg-zinc-300/50" >Fazer login</Button>
-                  </Link>
+                  {!isAuthenticated ? (
+                    <>
+                      <Link to="/register">
+                        <Button className="flex items-center text-white bg-violet-500 hover:bg-violet-600" >
+                          Começar agora
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </Link>
+                      <Link to="/login">
+                        <Button className="text-black border border-zinc-300/50 bg-transparent hover:bg-zinc-300/50" >Fazer login</Button>
+                      </Link>
+                    </>
+                  ) : (
+                    <Link to="/dashboard">
+                      <Button className="flex items-center text-white bg-violet-500 hover:bg-violet-600" >
+                        Acessar Dashboard
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
+                  )}
                 </div>
               </div>
               <div className="flex items-center justify-center">
