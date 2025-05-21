@@ -1,4 +1,4 @@
-export function Footer() {
+export const Footer = () => {
   return (
     <footer className="flex flex-col items-center justify-center w-full border-t border-zinc-300/50 py-6 bg-white">
       <div className="container flex flex-col items-center justify-center gap-4 md:flex-row md:gap-8">

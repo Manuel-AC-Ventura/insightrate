@@ -1,9 +1,9 @@
-import { Link } from "react-router-dom"
-import { useAuth } from "../hooks/useAuth"
-import { Button } from "../components/Button"
-import { Header } from "../components/Header"
-import { Footer } from "../components/Footer"
-import { FeatureCard } from "../components/FeatureCard"
+import { Link } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
+import { Footer } from "../components/layout/Footer";
+import { Button } from "../components/common/Button";
+import { Header } from "../components/layout/Header";
+import { FeatureCard } from "../components/FeatureCard";
 import { ArrowRight, MessageSquare, ThumbsUp, Users } from "lucide-react"
 
 export const Home = () => {

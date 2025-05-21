@@ -1,9 +1,10 @@
-import { Button } from "./Button";
-import { useAuth } from "../hooks/useAuth";
+import { Button } from "../common/Button";
 import { MessageSquare } from "lucide-react";
+import { useAuth } from "../../hooks/useAuth";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
-export function Header() {
+
+export const Header = () => {
   const { isAuthenticated, logout, user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -44,7 +45,6 @@ export function Header() {
 
         {showUserButtons && (
           <div className="flex items-center gap-4">
-            {/* Exemplo: Mostrar nome ou e-mail */}
             {user?.name && (
               <span className="text-sm text-zinc-700">
                 Olá, <strong>{user.name}</strong>
@@ -67,5 +67,5 @@ export function Header() {
         )}
       </div>
     </header>
-  );
+  )
 }

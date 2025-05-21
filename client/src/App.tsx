@@ -1,47 +1,34 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./context/authContext";
 import { Home } from "./pages/Home";
 import { Login } from "./pages/auth/Login";
+import { Dashboard } from "./pages/dashboard";
 import { Register } from "./pages/auth/Register";
-import { PrivateRoute } from "./components/PrivateRoute";
+import { NewBoard } from "./pages/dashboard/new";
+import { Board } from "./pages/dashboard/[slug]";
 import { GuestRoute } from "./components/GuestRoute";
+import { AuthProvider } from "./contexts/authContext";
+import { PrivateRoute } from "./components/PrivateRoute";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 export const App = () => {
   return (
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          {/* ✅ Home é pública */}
           <Route path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
+          
+          <Route element={<GuestRoute />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+          </Route >
 
-          <Route
-            path="/login"
-            element={
-              <GuestRoute>
-                <Login />
-              </GuestRoute>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <GuestRoute>
-                <Register />
-              </GuestRoute>
-            }
-          />
-
-          <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute>
-                <div>Área Logada</div>
-              </PrivateRoute>
-            }
-          />
+          <Route element={<PrivateRoute />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard/:slug" element={<Board />} />
+            <Route path="/dashboard/new" element={<NewBoard />} />
+          </Route >
         </Routes>
       </AuthProvider>
     </BrowserRouter>
-  );
-};
+  )
+}

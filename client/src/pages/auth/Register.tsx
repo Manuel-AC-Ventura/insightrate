@@ -1,63 +1,52 @@
 import { useState } from "react";
-import { Input } from "../../components/Input";
-import { Label } from "../../components/Label";
-import { Header } from "../../components/Header";
-import { Button } from "../../components/Button";
-import { Link, useNavigate } from "react-router-dom";
-import { userSchema } from "../../schemas/user.validator";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
+import { Label } from "../../components/common/Label";
+import { Input } from "../../components/common/Input";
+import { Button } from "../../components/common/Button";
+import { Header } from "../../components/layout/Header";
+import { UserSchema } from "../../schemas/user.validator";
+import { getErrorMessageFromStatus } from "../../utils/errorHandler";
 
 export const Register = () => {
+  const { register } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [errors, setErrors] = useState<string[]>([]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(null);
-
-    // Validate with zod schema
-    const result = userSchema.safeParse({
-      name,
-      email,
-      password,
-      passwordConfirmation: confirmPassword,
-    });
-
-    if (!result.success) {
-      // Show first error message
-      const firstError = Object.values(result.error.flatten().fieldErrors)[0]?.[0];
-      setError(firstError || "Dados inválidos.");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError("As senhas não coincidem.");
-      return;
-    }
-
+    setErrors([]);
     setLoading(true);
+
     try {
-      const res = await fetch("http://localhost:5000/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || "Erro ao registrar.");
-        setLoading(false);
+      if (password !== confirmPassword) {
+        setErrors(["As senhas não coincidem."]);
         return;
       }
 
-      navigate("/login");
-    } catch (err) {
-      setError("Erro de conexão com o servidor.");
+      const parsed = await UserSchema.parseAsync({ name, email, password });
+      const {
+        name: parsedName = "",
+        email: parsedEmail = "",
+        password: parsedPassword = "",
+      } = parsed;
+
+      await register({ name: parsedName, email: parsedEmail, password: parsedPassword }); 
+    } catch (err: any) {
+      if (err?.name === "ZodError") {
+        const zodErrors = err.errors.map((e: any) => e.message);
+        setErrors(zodErrors);
+      } else if (err?.response) {
+        const status = err.response.status;
+        const msg = getErrorMessageFromStatus(status, err.response.data.message);
+        setErrors([msg]);
+      } else {
+        setErrors(["Erro inesperado. Tente novamente."]);
+      }
     } finally {
       setLoading(false);
     }
@@ -77,6 +66,7 @@ export const Register = () => {
             Preencha os campos abaixo para criar sua conta
           </h5>
         </div>
+
         <div className="w-full">
           <Label htmlFor="name">Nome</Label>
           <Input
@@ -88,6 +78,7 @@ export const Register = () => {
             onChange={e => setName(e.target.value)}
           />
         </div>
+
         <div className="w-full">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -99,6 +90,7 @@ export const Register = () => {
             onChange={e => setEmail(e.target.value)}
           />
         </div>
+
         <div className="w-full">
           <Label htmlFor="password">Senha</Label>
           <Input
@@ -109,6 +101,7 @@ export const Register = () => {
             onChange={e => setPassword(e.target.value)}
           />
         </div>
+
         <div className="w-full">
           <Label htmlFor="confirmPassword">Confirmar senha</Label>
           <Input
@@ -119,9 +112,15 @@ export const Register = () => {
             onChange={e => setConfirmPassword(e.target.value)}
           />
         </div>
-        {error && (
-          <div className="w-full text-red-500 text-sm text-center">{error}</div>
+
+        {errors.length > 0 && (
+          <div className="w-full text-red-500 text-sm space-y-1 text-center">
+            {errors.map((err, idx) => (
+              <p key={idx}>{err}</p>
+            ))}
+          </div>
         )}
+
         <Button
           className="w-full py-3 text-white rounded-lg bg-violet-500 hover:bg-violet-600"
           type="submit"

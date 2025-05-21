@@ -1,34 +1,43 @@
 import { useState } from "react";
-//import { login } from "../../api/auth";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
-import { Input } from "../../components/Input";
-import { Label } from "../../components/Label";
-import { Header } from "../../components/Header";
-import { Button } from "../../components/Button";
-import { Link, useNavigate } from "react-router-dom";
-import { userSchema } from "../../schemas/user.validator";
+import { Label } from "../../components/common/Label";
+import { Input } from "../../components/common/Input";
+import { Button } from "../../components/common/Button";
+import { Header } from "../../components/layout/Header";
+import { UserSchema } from "../../schemas/user.validator";
+import { getErrorMessageFromStatus } from "../../utils/errorHandler";
 
 export const Login = () => {
   const { login } = useAuth();
+  const [errors, setErrors] = useState<string[]>([]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError("");
+    setErrors([]);
+    setLoading(true);
 
     try {
-      const schema = userSchema.parseAsync({ email, password });
-      const user = await login(email, password);
+      const parsed = await UserSchema.parseAsync({ email, password });
 
-     // const user = await login({ email, password });
-
-    } catch (error) {
-      
+      await login(parsed.email ?? "", parsed.password ?? "");
+    } catch (err: any) {
+      if (err?.name === "ZodError") {
+        const zodErrors = err.errors.map((e: any) => e.message);
+        setErrors(zodErrors);
+      } else if (err?.response) {
+        const msg = getErrorMessageFromStatus(err.response.status, err.response.data.message);
+        setErrors([msg]);
+      } else {
+        setErrors(["Erro inesperado. Tente novamente."]);
+      }
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="bg-gray-100 h-dvh space-y-50">
@@ -44,6 +53,7 @@ export const Login = () => {
             Entre com seu email e senha para acessar sua conta
           </h5>
         </div>
+
         <div className="w-full">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -55,6 +65,7 @@ export const Login = () => {
             onChange={e => setEmail(e.target.value)}
           />
         </div>
+
         <div className="w-full">
           <Label htmlFor="password">Senha</Label>
           <Input
@@ -66,12 +77,17 @@ export const Login = () => {
           />
         </div>
 
-        {error && (
-          <div className="w-full text-red-500 text-sm text-center">{error}</div>
+        {errors.length > 0 && (
+          <div className="w-full text-red-500 text-sm text-center space-y-1">
+            {errors.map((err, idx) => (
+              <p key={idx}>{err}</p>
+            ))}
+          </div>
         )}
+
         <Button
-          className="w-full py-3 text-white rounded-lg bg-violet-500 hover:bg-violet-600"
           type="submit"
+          className="w-full bg-violet-500 hover:bg-violet-600 text-white rounded-lg outline-none"
           disabled={loading}
         >
           {loading ? "Entrando..." : "Entrar"}
