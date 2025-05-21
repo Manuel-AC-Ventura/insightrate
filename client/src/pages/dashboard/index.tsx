@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
+import { Header } from "../../components/layout/Header";
 
 interface Board {
   id: string;
@@ -30,7 +31,8 @@ export const Dashboard = () => {
   }, [user]);
 
   return (
-    <div className="p-6">
+    <div className="flex h-dvh w-full flex-col bg-slate-200">
+      <Header />
       <h1 className="text-2xl font-semibold mb-4">Suas boards</h1>
       {boards.length === 0 ? (
         <p>Nenhuma board criada ainda.</p>
