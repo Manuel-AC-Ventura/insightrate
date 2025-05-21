@@ -50,4 +50,20 @@ export class AuthService {
     };
   }
 
+  async refreshAccessToken(refreshToken: string): Promise<string> {
+    try {
+      const payload = this.tokenService.verifyRefreshToken(refreshToken);
+      if (!payload.id) throw new Error("Invalid token payload: missing user id");
+
+      const user = await this.userModel.findById(payload.id);
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      const newAccessToken = this.tokenService.generateToken({ id: user.id, email: user.email });
+      return newAccessToken;
+    } catch (error) {
+      throw new Error("Invalid or expired refresh token");
+    }
+  }
 }
